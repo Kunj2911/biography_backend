@@ -779,6 +779,29 @@ app.get("/person_details", async (req, res) => {
   }
 });
 
+// ----------------- Increment Person View Count -----------------
+app.post("/persons/:id/view", async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const person = await Persons.findByIdAndUpdate(
+      id,
+      { $inc: { views: 1 } },
+      { new: true }
+    );
+
+    if (!person) {
+      return res.status(404).json({ status: false, message: "Person not found" });
+    }
+
+    res.json({
+      status: true,
+      views: person.views,
+    });
+  } catch (err) {
+    res.status(500).json({ status: false, error: err.message });
+  }
+});
 
 
   
