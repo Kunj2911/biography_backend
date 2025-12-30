@@ -13,6 +13,34 @@ const Categories = require("./categories");
 const Persons = require("./persons");
 const Families = require("./family");
 const User = require("./User");
+// ===============================
+// CREATE DEFAULT ADMIN USER
+// ===============================
+async function createDefaultAdmin() {
+  try {
+    const adminEmail = "admin@gmail.com";
+
+    const existingAdmin = await User.findOne({ email: adminEmail });
+
+    if (!existingAdmin) {
+      await User.create({
+        name: "Admin",
+        email: adminEmail,
+        password: "1234", // plain text (matches your login logic)
+      });
+
+      console.log("✅ Admin created: admin@gmail.com / 1234");
+    } else {
+      console.log("ℹ️ Admin already exists");
+    }
+  } catch (err) {
+    console.error("❌ Admin creation error:", err.message);
+  }
+}
+
+// call ONCE when server starts
+createDefaultAdmin();
+
 const Setting = require('./Setting')
 const Banner = require("./banner");
 
