@@ -171,24 +171,6 @@ app.post("/family", upload.none(), async (req, resp) => {
 });
 
 
-// ----------------- Get All Categories -----------------
-app.get("/categories", async (req, res) => {
-  try {
-    const categories = await Categories.find({}, { _id: 1, category_name: 1 });
-    res.json({
-      status: true,
-      categories: categories.map(c => ({
-        _id: c._id,
-        category_name: c.category_name,
-      })),
-    });
-  } catch (error) {
-    console.error("Error fetching categories:", error);
-    res.status(500).json({ status: false, error: "Server error" });
-  }
-});
-
-
 // ----------------- Get Persons by Category -----------------
 app.get("/categories/:id/persons", async (req, resp) => {
   try {
@@ -273,34 +255,27 @@ app.get("/new-arrivals", async (req, resp) => {
 });
 
 // ----------------- Category Details by ID API -----------------
-app.get("/categories_details/:id", async (req, resp) => {
+// ----------------- Get Category By ID (For Update/Edit) -----------------
+app.get("/categories/:id", async (req, res) => {
   try {
-    const { id } = req.params;
-
-    const category = await Categories.findById(id, {
-      category_photo: 1,
-      multiple_img_array: 1,
-      category_name: 1,
-      description: 1,
-    });
+    const category = await Categories.findById(req.params.id);
 
     if (!category) {
-      return resp.status(404).json({ status: false, message: "Category not found" });
+      return res.status(404).json({
+        status: false,
+        message: "Category not found",
+      });
     }
 
-    resp.json({
+    res.json({
       status: true,
-      category_details: {
-        category_photo: category.category_photo,
-        multiple_img_array: category.multiple_img_array,
-        category_name: category.category_name,
-        description: category.description,
-      },
+      category,
     });
   } catch (err) {
-    resp.status(500).json({ status: false, error: err.message });
+    res.status(500).json({ status: false, error: err.message });
   }
 });
+
 
 // ----------------- Person Details by ID API -----------------
 app.get("/person_details/:id", async (req, resp) => {
