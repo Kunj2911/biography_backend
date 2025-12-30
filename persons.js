@@ -3,13 +3,11 @@ const mongoose = require('mongoose');
 const personsSchema = new mongoose.Schema({
   category_id: { type: mongoose.Schema.Types.ObjectId, ref: "categories" },
   name: String,
-  title: String,
   education: String,
   dob: Date,
   dob_place: String,
   date_of_death: Date,
   place_of_death: String,
-  affiliation: String,
   short_description: String,
   full_details: String,
   persons_image: String,

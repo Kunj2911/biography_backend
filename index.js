@@ -795,10 +795,13 @@ app.get("/most-read", async (req, resp) => {
       {
         category_id: 1,
         name: 1,
-        title: 1,
         persons_image: 1,
         short_description: 1,
         views: 1,
+        dob: 1,               // ✅ Date of Birth
+        date_of_death: 1,     // ✅ Date of Death
+        isTrending: 1,        // ✅ Trending flag
+        isNewArrival: 1,      // ✅ New Arrival flag
         createdAt: 1,
       }
     )
@@ -808,10 +811,14 @@ app.get("/most-read", async (req, resp) => {
 
     resp.json({
       status: true,
+      total: persons.length,
       most_read: persons,
     });
   } catch (err) {
-    resp.status(500).json({ status: false, error: err.message });
+    resp.status(500).json({
+      status: false,
+      error: err.message,
+    });
   }
 });
 
