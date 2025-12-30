@@ -188,18 +188,6 @@ app.post(
   }
 );
 
-// ----------------- Family API -----------------
-app.post("/family", upload.none(), async (req, resp) => {
-  try {
-    let family = new Families(req.body);
-    let result = await family.save();
-    resp.json({ status: true, result });
-  } catch (err) {
-    resp.status(500).json({ status: false, error: err.message });
-  }
-});
-
-
 // ----------------- Get Persons by Category -----------------
 app.get("/categories/:id/persons", async (req, resp) => {
   try {
@@ -843,7 +831,7 @@ app.post("/app-update", async (req, res) => {
   }
 });
 
-  
+
 app.get("/app-updates", async (req, res) => {
   try {
     const updates = await AppUpdate.find().sort({ createdAt: -1 });
@@ -853,6 +841,58 @@ app.get("/app-updates", async (req, res) => {
   }
 });
 
+// ----------------- Dashboard API -----------------
+app.get("/dashboard", async (req, res) => {
+  try {
+    // 1️⃣ Banner list
+    const banners = await Banner.find().sort({ createdAt: -1 });
+
+    // 2️⃣ Category list
+    const categories = await Categories.find(
+      {},
+      {
+        category_name: 1,
+        description: 1,
+        image: 1,
+        icon: 1,
+      }
+    ).sort({ createdAt: -1 });
+
+    // 3️⃣ Most read persons (Top 5)
+    const mostReadPersons = await Persons.find(
+      {},
+      {
+        name: 1,
+        title: 1,
+        persons_image: 1,
+        short_description: 1,
+        views: 1,
+      }
+    )
+      .populate("category_id", "category_name")
+      .sort({ views: -1 })
+      .limit(5);
+
+    // 4️⃣ Settings
+    const setting = await Setting.findOne();
+
+    res.json({
+      status: true,
+      dashboard: {
+        banners,
+        categories,
+        most_read_persons: mostReadPersons,
+        setting,
+      },
+    });
+  } catch (err) {
+    console.error("Dashboard error:", err);
+    res.status(500).json({
+      status: false,
+      error: err.message,
+    });
+  }
+});
 
   
 // ----------------- Server -----------------
