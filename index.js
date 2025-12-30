@@ -43,6 +43,7 @@ createDefaultAdmin();
 
 const Setting = require('./Setting')
 const Banner = require("./banner");
+const AppUpdate = require("./AppUpdate");
 
 // ----------------- Multer Storage -----------------
 const storage = multer.diskStorage({
@@ -798,6 +799,55 @@ app.post("/persons/:id/view", async (req, res) => {
       status: true,
       views: person.views,
     });
+  } catch (err) {
+    res.status(500).json({ status: false, error: err.message });
+  }
+});
+
+// ----------------- Most Read Persons API -----------------
+app.get("/most-read", async (req, resp) => {
+  try {
+    const persons = await Persons.find(
+      {},
+      {
+        category_id: 1,
+        name: 1,
+        title: 1,
+        persons_image: 1,
+        short_description: 1,
+        views: 1,
+        createdAt: 1,
+      }
+    )
+      .populate("category_id", "category_name")
+      .sort({ views: -1 }) // 🔥 highest views first
+      .limit(5);           // 🔥 top 5 only
+
+    resp.json({
+      status: true,
+      most_read: persons,
+    });
+  } catch (err) {
+    resp.status(500).json({ status: false, error: err.message });
+  }
+});
+
+// ----------------- App Update (POST ONLY) -----------------
+app.post("/app-update", async (req, res) => {
+  try {
+    const update = new AppUpdate(req.body);
+    await update.save();
+    res.json({ status: true, update });
+  } catch (err) {
+    res.status(500).json({ status: false, error: err.message });
+  }
+});
+
+  
+app.get("/app-updates", async (req, res) => {
+  try {
+    const updates = await AppUpdate.find().sort({ createdAt: -1 });
+    res.json({ status: true, updates });
   } catch (err) {
     res.status(500).json({ status: false, error: err.message });
   }
