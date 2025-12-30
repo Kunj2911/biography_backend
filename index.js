@@ -347,11 +347,11 @@ app.get("/setting", async (req, resp) => {
       status: true,
       setting: setting
         ? {
-            terms_conditions: setting.terms_conditions,
-            privacy_policy: setting.privacy_policy,
-            contact: setting.contact,
-            aboutus: setting.aboutus,
-          }
+          terms_conditions: setting.terms_conditions,
+          privacy_policy: setting.privacy_policy,
+          contact: setting.contact,
+          aboutus: setting.aboutus,
+        }
         : null,
     });
   } catch (err) {
@@ -857,6 +857,7 @@ app.get("/dashboard", async (req, res) => {
         description: 1,
         image: 1,
         icon: 1,
+        multiple_img_array: 3,
       }
     ).sort({ createdAt: -1 });
 
@@ -864,11 +865,16 @@ app.get("/dashboard", async (req, res) => {
     const mostReadPersons = await Persons.find(
       {},
       {
+        category_id: 1,
         name: 1,
-        title: 1,
         persons_image: 1,
         short_description: 1,
         views: 1,
+        dob: 1,               // ✅ Date of Birth
+        date_of_death: 1,     // ✅ Date of Death
+        isTrending: 1,        // ✅ Trending flag
+        isNewArrival: 1,      // ✅ New Arrival flag
+        createdAt: 1,      // ✅ New Arrival flag
       }
     )
       .populate("category_id", "category_name")
@@ -896,6 +902,6 @@ app.get("/dashboard", async (req, res) => {
   }
 });
 
-  
+
 // ----------------- Server -----------------
 app.listen(7000, () => console.log("Server running on http://localhost:7000"));
