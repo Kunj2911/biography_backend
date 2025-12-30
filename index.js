@@ -11,7 +11,6 @@ app.use(cors());
 require("./config");
 const Categories = require("./categories");
 const Persons = require("./persons");
-const Families = require("./family");
 const User = require("./User");
 // ===============================
 // CREATE DEFAULT ADMIN USER
@@ -126,9 +125,7 @@ app.post(
   "/categories",
   upload.fields([
     { name: "image", maxCount: 1 },
-    { name: "banner_image", maxCount: 1 },
     { name: "icon", maxCount: 1 },
-    { name: "category_photo", maxCount: 1 },
     { name: "multiple_img_array", maxCount: 10 },
   ]),
   async (req, resp) => {
@@ -136,9 +133,7 @@ app.post(
       let data = {
         ...req.body,
         image: req.files["image"]?.[0]?.filename || null,
-        banner_image: req.files["banner_image"]?.[0]?.filename || null,
         icon: req.files["icon"]?.[0]?.filename || null,
-        category_photo: req.files["category_photo"]?.[0]?.filename || null,
         multiple_img_array: req.files["multiple_img_array"]
           ? req.files["multiple_img_array"].map((f) => f.filename)
           : [],
